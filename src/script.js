@@ -18,3 +18,21 @@ input.addEventListener('keypress', (e) => {
     button.click();
   }
 });
+
+async function fetchData(query) {
+  try {
+    const response = await fetch(
+      `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}`
+    );
+
+    if (!response.ok) {
+      throw new Error(`Error HTTP: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+
+  } catch (error) {
+    console.error("Fetch error:", error);
+  }
+}
