@@ -1,8 +1,17 @@
+const STORAGE_KEY = 'api-search-result';
+
 const input = document.getElementById('searchInput');
 const button = document.getElementById('searchBtn');
 const resultContainer = document.getElementById('resultSearch');
 
+function saveResult(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
 
+function getSavedResult() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  return raw ? JSON.parse(raw) : null;
+}
 
 async function fetchData(query) {
   const response = await fetch(
@@ -14,51 +23,69 @@ async function fetchData(query) {
   }
 
   const data = await response.json();
-  return data;
+
+  const filteredData = data.docs.slice(0, 10).map((book) => ({
+    key: book.key,
+    title: book.title,
+    author: book.author_name?.[0] || 'Unknown author',
+    firstPublishYear: book.first_publish_year || 'No data',
+    cover: book.cover_i
+      ? `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg`
+      : null,
+  }));
+
+  return filteredData;
 }
 
-function displayBooks(books) {
-  resultContainer.innerHTML = '';
-
-  if (books.length === 0) {
-    resultContainer.innerHTML = '<p>No books found.</p>';
+function renderResult(container, books) {
+  if (!books.length) {
+    container.innerHTML = '<p>No results.</p>';
     return;
   }
+  container.innerHTML = books.map((book) => `
+    <div class="card">
+      ${
+        book.cover
+          ? `<img src="${book.cover}" alt="Book cover for${book.title}">`
+          : `<div class="noCover">No cover</div>`
+      }
+      <h3>${book.title}</h3>
+      <p>${book.author}</p>
+      <p>${book.firstPublishYear}</p>
+    </div>
+  `).join('');
+}
 
-  books.forEach((book) => {
-    const bookElement = document.createElement('div');
-    bookElement.classList.add('book');
+function renderError(container, message) {
+  container.innerHTML = `<p>${message}</p>`;
+}
 
-    bookElement.innerHTML = `
-      <h3>${book.title || 'No title'}</h3>
-      <p>Author: ${book.author_name ? book.author_name[0] : 'Unknown author'}</p>
-      <p>First published: ${book.first_publish_year || 'No data'}</p>
-    `;
-
-    resultContainer.appendChild(bookElement);
-  });
+const saved = getSavedResult();
+if (saved) {
+  renderResult(resultContainer, saved);
 }
 
 button.addEventListener('click', async () => {
   const query = input.value.trim();
 
   if (!query) {
-    alert('Type something first');
+    renderError(resultContainer, 'Type something first.');
     return;
   }
 
-  try {
-    resultContainer.innerHTML = '<p>Loading...</p>';
+  resultContainer.textContent = 'Loading...';
 
+  try {
     const data = await fetchData(query);
-    displayBooks(data.docs);
+    saveResult(data);
+    renderResult(resultContainer, data);
   } catch (error) {
-    resultContainer.innerHTML = '<p>Something went wrong.</p>';
     console.error(error);
+    renderError(resultContainer, 'Something went wrong.');
   }
 });
 
-input.addEventListener('keydown', async (e) => {
+input.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') {
     button.click();
   }

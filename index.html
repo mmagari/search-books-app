@@ -2,20 +2,34 @@
 <html lang="pl">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width, initial-scale=1.0" />
     <title>Books APP</title>
     <link rel="stylesheet" href="style.css">
   </head>
 
   <body>
-    <div class="container">
-      <div class="search">
-        <input id="searchInput" type="text" placeholder="Search for books by title or author..">
-        <button id="searchBtn">Search</button>
+    <div class="logo">
+      <div class="logo-inner">
+        <span class="logoIcon"></span>
+        <span>
+          <h3>The Library</h1>
+          <p>Discover your next favourite book</p>
+        </span>
       </div>
     </div>
-    <div id="resultSearch"> 
+    <div class="container">
+        <h1 class="">Discover Your Next Great Read</h1>
+        <p class="search-text">Search millions of books, build your personal library, and never lose track of what to read next</p>
+      <div class="search">
+        <input id="searchInput" class="searchInput" type="text" placeholder="Search for books by title or author..">
+        <button id="searchBtn" class="searchBtn">Search</button>
+      </search>
     </div>
+    <div class="result"> 
+      <div id="resultSearch" class="resultSearch"></div>
+      <div id="resultFavourite" class="resultFavourite"></div>
+    </div>
+    <footer class="footer">Powered by <span class="footer-link"><a href="https://openlibrary.org" target="_blank"> Open Library</a> </span></footer>
     <script src="src/script.js"></script>
   </body>
 </html>
