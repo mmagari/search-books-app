@@ -2,34 +2,52 @@
 <html lang="pl">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width, initial-scale=1.0" />
-    <title>Books APP</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Books App</title>
+    <link rel="stylesheet" href="style.css" />
   </head>
 
   <body>
-    <div class="logo">
-      <div class="logo-inner">
-        <span class="logoIcon"></span>
-        <span>
-          <h3>The Library</h1>
-          <p>Discover your next favourite book</p>
-        </span>
+    <header class="header">
+      <div class="header__logo">
+        <span class="header__icon"></span>
+        <div class="header__text">
+          <h3 class="header__title">The Library</h3>
+          <p class="header__subtitle">Discover your next favourite book</p>
+        </div>
       </div>
-    </div>
-    <div class="container">
-        <h1 class="">Discover Your Next Great Read</h1>
-        <p class="search-text">Search millions of books, build your personal library, and never lose track of what to read next</p>
+    </header>
+
+    <main class="container">
+      <h1 class="container__title">Discover Your Next Great Read</h1>
+      <p class="container__description">
+        Search millions of books, build your personal library, and never lose track of what to read next
+      </p>
+
       <div class="search">
-        <input id="searchInput" class="searchInput" type="text" placeholder="Search for books by title or author..">
-        <button id="searchBtn" class="searchBtn">Search</button>
-      </search>
-    </div>
-    <div class="result"> 
-      <div id="resultSearch" class="resultSearch"></div>
-      <div id="resultFavourite" class="resultFavourite"></div>
-    </div>
-    <footer class="footer">Powered by <span class="footer-link"><a href="https://openlibrary.org" target="_blank"> Open Library</a> </span></footer>
+        <input
+          id="searchInput"
+          class="search__input"
+          type="text"
+          placeholder="Search for books by title or author..."
+        />
+        <button id="searchBtn" class="search__button">Search</button>
+        <button id="clearBtn" class="search__clear">Clear</button>
+      </div>
+
+      <section class="results">
+        <div id="resultSearch" class="results__list"></div>
+        <div id="resultFavourite" class="results__favorites"></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      Powered by
+      <span class="footer__link">
+        <a href="https://openlibrary.org" target="_blank">Open Library</a>
+      </span>
+    </footer>
+
     <script src="src/script.js"></script>
   </body>
 </html>

@@ -13,6 +13,10 @@ function getSavedResult() {
   return raw ? JSON.parse(raw) : null;
 }
 
+function clearSavedResult() {
+  localStorage.removeItem(STORAGE_KEY);
+}
+
 async function fetchData(query) {
   const response = await fetch(
     `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}`
@@ -89,4 +93,9 @@ input.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') {
     button.click();
   }
+});
+
+clearBtn.addEventListener('click', () => {
+  clearSavedResult();
+  resultContainer.innerHTML = '<p>The results have been cleared.</p>';
 });
