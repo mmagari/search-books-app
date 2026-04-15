@@ -47,15 +47,15 @@ function renderResult(container, books) {
     return;
   }
   container.innerHTML = books.map((book) => `
-    <div class="card">
+    <div class="results__card">
       ${
         book.cover
           ? `<img src="${book.cover}" alt="Book cover for${book.title}">`
-          : `<div class="noCover">No cover</div>`
+          : `<div class="results__no-cover">No cover</div>`
       }
-      <h3>${book.title}</h3>
-      <p>${book.author}</p>
-      <p>${book.firstPublishYear}</p>
+      <h3 class="results__card-title">${book.title}</h3>
+      <p class="results__card-text">${book.author}</p>
+      <p class="results__card-text">${book.firstPublishYear}</p>
     </div>
   `).join('');
 }
