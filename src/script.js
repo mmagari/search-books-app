@@ -165,10 +165,15 @@ function toggleFavorite(book) {
 }
 
 function renderFavorites(container, books) {
+  const count = books.length;
+
   if (!books.length) {
     container.innerHTML = `
       <div class="favorites">
-        <h2 class="favorites__title">Favorites</h2>
+        <div class="favorites__header">
+          <h2 class="favorites__title">Favorites</h2>
+          <span class="favorites__count">0</span>
+        </div>
         <p class="favorites__empty">No favorite books yet.</p>
       </div>
     `;
@@ -177,20 +182,45 @@ function renderFavorites(container, books) {
 
   container.innerHTML = `
     <div class="favorites">
-      <h2 class="favorites__title">Favorites</h2>
+      <div class="favorites__header">
+        <h2 class="favorites__title">Favorites</h2>
+        <span class="favorites__count">${count}</span>
+      </div>
+
       <div class="favorites__list">
         ${books.map((book) => `
           <div class="favorites__item">
-            <button 
-              class="favorites__remove" 
-              type="button" 
+            <div class="favorites__cover-wrapper">
+              ${
+                book.cover
+                  ? `<img class="favorites__cover" src="${book.cover}" alt="Book cover for ${book.title}">`
+                  : `<div class="favorites__no-cover">No cover</div>`
+              }
+            </div>
+
+            <div class="favorites__content">
+              <p class="favorites__book-title">${book.title}</p>
+              <p class="favorites__book-author">${book.author}</p>
+              <p class="favorites__book-year">${book.firstPublishYear}</p>
+            </div>
+
+            <button
+              class="favorites__button"
+              type="button"
               data-key="${book.key}"
               aria-label="Remove from favorites"
             >
-              ×
+              <svg
+                class="favorites__icon"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  fill="currentColor"
+                  d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                />
+              </svg>
             </button>
-            <p class="favorites__book-title">${book.title}</p>
-            <p class="favorites__book-author">${book.author}</p>
           </div>
         `).join('')}
       </div>
@@ -216,11 +246,11 @@ resultContainer.addEventListener('click', (event) => {
 });
 
 favouriteContainer.addEventListener('click', (event) => {
-  const removeButton = event.target.closest('.favorites__remove');
+  const favoriteButton = event.target.closest('.favorites__button');
 
-  if (!removeButton) return;
+  if (!favoriteButton) return;
 
-  const bookKey = removeButton.dataset.key;
+  const bookKey = favoriteButton.dataset.key;
   favorites = favorites.filter((book) => book.key !== bookKey);
 
   saveFavorites(favorites);
