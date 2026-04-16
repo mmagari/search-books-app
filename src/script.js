@@ -170,14 +170,16 @@ function renderFavorites(container, books) {
   container.innerHTML = `
     <div class="favorites">
       <div class="favorites__header">
-        <div class="favorites__header-top">
+        <div class="favorites__header-inner">
           <span class="favorites__header-icon"></span>
-          <h2 class="favorites__title">Favourites</h2>
+          <div class="favorites__header-text">
+            <h2 class="favorites__title">Favourites</h2>
+          
+            <p class="favorites__count">
+              ${count} ${count === 1 ? 'book saved' : 'books saved'}
+            </p>
+          </div>
         </div>
-
-        <p class="favorites__count">
-          ${count} ${count === 1 ? 'book saved' : 'books saved'}
-        </p>
       </div>
 
       ${
