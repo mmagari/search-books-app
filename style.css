@@ -659,9 +659,10 @@ p {
   }
 
   .favorites__item {
-    grid-template-columns: 44px 1fr 20px;
+    grid-template-columns: 44px 1fr 32px;
     gap: 0.5rem;
     padding: 8px 4px;
+    align-items: center;
   }
 
   .favorites__cover-box {
@@ -683,9 +684,15 @@ p {
     font-size: 0.68rem;
   }
 
+  .favorites__button {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+  }
+
   .favorites__icon {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
   }
 
   .footer {
