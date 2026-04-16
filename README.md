@@ -71,7 +71,7 @@ https://github.com/mmagari/search-books-app
 ---
 
 ## 🔗 Live Demo
-https://search-books-api-teal.vercel.app/
+https://search-books-aplication.vercel.app/
 
 ---
 
