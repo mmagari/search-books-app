@@ -1,5 +1,9 @@
+/* Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap');
 
+/* ========================================
+   Design tokens / color variables
+======================================== */
 :root {
     --white: #ffffff;
     --green: #27694d;
@@ -19,6 +23,9 @@
     --favorite: #eaf0ed;
 }
 
+/* ========================================
+   Base / reset
+======================================== */
 *,
 *::before,
 *::after {
@@ -42,6 +49,14 @@ p {
   font-family: inherit;
 }
 
+/* Utility class used to hide elements such as the author filter */
+.is-hidden {
+  display: none;
+}
+
+/* ========================================
+   Header
+======================================== */
 .header {
   border-bottom: 1px solid var(--border);
   width: 100%;
@@ -81,6 +96,9 @@ p {
   margin: 0;
 }
 
+/* ========================================
+   Hero section
+======================================== */
 .hero {
   padding: 2rem 1rem;
   display: flex;
@@ -104,6 +122,9 @@ p {
   margin: 0;
 }
 
+/* ========================================
+   Search area
+======================================== */
 .search {
   display: flex;
   flex-direction: row;
@@ -157,6 +178,7 @@ p {
   opacity: 0.88;
 }
 
+/* Author filter shown after results are loaded */
 .search__filter {
   min-height: 48px;
   padding: 0 0.75rem;
@@ -168,10 +190,7 @@ p {
   cursor: pointer;
 }
 
-.is-hidden {
-  display: none;
-}
-
+/* Shared transition for search controls */
 .search__input,
 .search__button,
 .search__clear,
@@ -179,6 +198,11 @@ p {
   transition: border-color 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
 }
 
+/* ========================================
+   Main results layout
+   Left: search results grid
+   Right: favorites panel
+======================================== */
 .results {
   display: grid;
   grid-template-columns: minmax(0, 5fr) minmax(180px, 1fr);
@@ -198,6 +222,19 @@ p {
   gap: 20px;
 }
 
+/* Favorites panel container */
+.results__favorites {
+  margin-top: 2rem;
+  width: 200px;
+  min-height: 250px;
+  border-radius: 10px;
+  background-color: var(--card);
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+}
+
+/* ========================================
+   Search result cards
+======================================== */
 .results__card {
   position: relative;
   background-color: var(--card);
@@ -232,6 +269,7 @@ p {
   padding: 0 1rem;
 }
 
+/* Placeholder shown when a search result has no cover */
 .results__no-cover {
   background-color: var(--text);
   color: var(--white);
@@ -241,6 +279,12 @@ p {
   text-align: center;
 }
 
+
+/* ========================================
+   Favorite button on result cards
+   Default: outline
+   Active: filled red
+======================================== */
 .card__favorite-btn {
   position: absolute;
   top: 10px;
@@ -273,31 +317,28 @@ p {
   transform: scale(0.9);
 }
 
+/* Outline heart */
 .card__favorite-path {
   fill: none;
   stroke: currentColor;
   stroke-width: 2;
 }
 
+/* Filled heart when active */
 .card__favorite-btn--active .card__favorite-path {
   fill: currentColor;
   stroke: none;
   transition: fill 0.2s ease;
 }
 
+/* ========================================
+   Favorites panel
+======================================== */
 .favorites {
   padding: 1rem 0;
 }
 
-.favorites__results {
-  margin-top: 2rem;
-  width: 200px;
-  min-height: 250px;
-  border-radius: 10px;
-  background-color: var(--card);
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-}
-
+/* Favorites header */
 .favorites__header {
   border-bottom: 1px solid var(--border);
   margin-bottom: 0.2rem;
@@ -367,6 +408,7 @@ p {
   border-bottom: 1px solid var(--border);
 }
 
+/* cover area inside favorites */
 .favorites__cover-box {
   width: 50px;
   height: 72px;
@@ -386,6 +428,7 @@ p {
   display: block;
 }
 
+/* Placeholder shown when a favorite item has no cover */
 .favorites__no-cover {
   background-color: var(--secondary);
   color: var(--text);
@@ -413,6 +456,7 @@ p {
   text-align: left;
 }
 
+/* Limit title length so the favorites list stays compact */
 .favorites__book-title {
   color: var(--title);
   display: -webkit-box;
@@ -421,6 +465,7 @@ p {
   overflow: hidden;
 }
 
+/* Remove-from-favorites button */
 .favorites__button {
   border: none;
   background: transparent;
@@ -440,6 +485,9 @@ p {
   transform: scale(1.08);
 }
 
+/* ========================================
+   Footer
+======================================== */
 .footer {
   font-size: 0.9rem;
   width: 100%;
@@ -458,6 +506,9 @@ p {
   margin-left: 0.2rem;
 }
 
+/* ========================================
+   Responsive: tablet / small laptop
+======================================== */
 @media (max-width: 1024px) {
   .header__logo {
     padding: 0 1rem 1rem 1rem;
@@ -489,6 +540,9 @@ p {
   }
 }
 
+/* ========================================
+   Responsive: tablet / large mobile
+======================================== */
 @media (max-width: 768px) {
   .hero {
     padding: 1.5rem 1rem;
@@ -546,6 +600,9 @@ p {
   }
 }
 
+/* ========================================
+   Responsive: small mobile
+======================================== */
 @media (max-width: 480px) {
   .header__logo {
     gap: 0.6rem;
