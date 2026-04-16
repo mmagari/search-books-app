@@ -168,6 +168,10 @@ p {
   cursor: pointer;
 }
 
+.is-hidden {
+  display: none;
+}
+
 .search__input,
 .search__button,
 .search__clear,

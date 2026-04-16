@@ -126,8 +126,11 @@ button.addEventListener('click', async () => {
     saveResult(data);
     renderAuthorFilter(allBooks);
     renderResult(resultContainer, getFilteredBooks());
-  } catch (error) {
+    } catch (error) {
     console.error(error);
+    allBooks = [];
+    selectedAuthor = 'all';
+    authorFilter.classList.add('is-hidden');
     renderError(resultContainer, 'Something went wrong.');
   }
 });
@@ -140,6 +143,10 @@ input.addEventListener('keydown', (e) => {
 
 clearBtn.addEventListener('click', () => {
   clearSavedResult();
+  allBooks = [];
+  selectedAuthor = 'all';
+  authorFilter.classList.add('is-hidden');
+  authorFilter.innerHTML = '<option value="all">All authors</option>';
   resultContainer.innerHTML = '<p>The results have been cleared.</p>';
 });
 
@@ -167,11 +174,7 @@ function toggleFavorite(book) {
 
   saveFavorites(favorites);
   renderFavorites(favouriteContainer, favorites);
-
-  const savedResults = getSavedResult();
-  if (savedResults) {
-    renderResult(resultContainer, savedResults);
-  }
+  renderResult(resultContainer, getFilteredBooks());
 }
 
 function renderFavorites(container, books) {
@@ -274,11 +277,7 @@ favouriteContainer.addEventListener('click', (event) => {
 
   saveFavorites(favorites);
   renderFavorites(favouriteContainer, favorites);
-
-  const savedResults = getSavedResult();
-  if (savedResults) {
-    renderResult(resultContainer, savedResults);
-  }
+  renderResult(resultContainer, getFilteredBooks());
 });
 
 function renderAuthorFilter(books) {
@@ -288,6 +287,13 @@ function renderAuthorFilter(books) {
       .filter((author) => author && author !== 'Unknown author')
   )].sort();
 
+  if (!books.length || authors.length === 0) {
+    authorFilter.classList.add('is-hidden');
+    authorFilter.innerHTML = '<option value="all">All authors</option>';
+    return;
+  }
+
+  authorFilter.classList.remove('is-hidden');
   authorFilter.innerHTML = `
     <option value="all">All authors</option>
     ${authors.map((author) => `<option value="${author}">${author}</option>`).join('')}
