@@ -6,8 +6,11 @@ const button = document.getElementById('searchBtn');
 const clearBtn = document.getElementById('clearBtn');
 const resultContainer = document.getElementById('resultSearch');
 const favouriteContainer = document.getElementById('resultFavourite');
+const authorFilter = document.getElementById('authorFilter');
 
 let favorites = getSavedFavorites();
+let allBooks = [];
+let selectedAuthor = 'all';
 
 function saveResult(data) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
@@ -97,7 +100,9 @@ function renderError(container, message) {
 
 const saved = getSavedResult();
 if (saved) {
-  renderResult(resultContainer, saved);
+  allBooks = saved;
+  renderAuthorFilter(allBooks);
+  renderResult(resultContainer, getFilteredBooks());
 }
 
 renderFavorites(favouriteContainer, favorites);
@@ -114,8 +119,13 @@ button.addEventListener('click', async () => {
 
   try {
     const data = await fetchData(query);
+
+    allBooks = data;
+    selectedAuthor = 'all';
+
     saveResult(data);
-    renderResult(resultContainer, data);
+    renderAuthorFilter(allBooks);
+    renderResult(resultContainer, getFilteredBooks());
   } catch (error) {
     console.error(error);
     renderError(resultContainer, 'Something went wrong.');
@@ -269,4 +279,30 @@ favouriteContainer.addEventListener('click', (event) => {
   if (savedResults) {
     renderResult(resultContainer, savedResults);
   }
+});
+
+function renderAuthorFilter(books) {
+  const authors = [...new Set(
+    books
+      .map((book) => book.author)
+      .filter((author) => author && author !== 'Unknown author')
+  )].sort();
+
+  authorFilter.innerHTML = `
+    <option value="all">All authors</option>
+    ${authors.map((author) => `<option value="${author}">${author}</option>`).join('')}
+  `;
+}
+
+function getFilteredBooks() {
+  if (selectedAuthor === 'all') {
+    return allBooks;
+  }
+
+  return allBooks.filter((book) => book.author === selectedAuthor);
+}
+
+authorFilter.addEventListener('change', (event) => {
+  selectedAuthor = event.target.value;
+  renderResult(resultContainer, getFilteredBooks());
 });

@@ -157,9 +157,21 @@ p {
   opacity: 0.88;
 }
 
+.search__filter {
+  min-height: 48px;
+  padding: 0 0.75rem;
+  border-radius: 8px;
+  border: 0.5px solid var(--border);
+  background-color: var(--white);
+  color: var(--text);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
 .search__input,
 .search__button,
-.search__clear {
+.search__clear,
+.search__filter {
   transition: border-color 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
 }
 
