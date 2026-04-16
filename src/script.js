@@ -189,12 +189,25 @@ function renderFavorites(container, books) {
             <div class="favorites__list">
               ${books.map((book) => `
                 <div class="favorites__item">
-                  <img
-                    class="favorites__cover"
-                    src="${book.cover}"
-                    alt="Book cover for ${book.title}"
-                    onerror="this.style.display='none'"
-                  />
+                  ${
+                    book.cover
+                      ? `
+                        <div class="favorites__cover-box">
+                          <img
+                            class="favorites__cover"
+                            src="${book.cover}"
+                            alt="Book cover for ${book.title}"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                          />
+                          <div class="favorites__no-cover" style="display: none;">No cover</div>
+                        </div>
+                      `
+                      : `
+                        <div class="favorites__cover-box">
+                          <div class="favorites__no-cover">No cover</div>
+                        </div>
+                      `
+                  } 
 
                   <div class="favorites__content">
                     <p class="favorites__book-title">${book.title}</p>
