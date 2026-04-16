@@ -1,4 +1,4 @@
-// Keys used to persist data in localStorage.
+// Persistent storage keys used by the app.
 const STORAGE_KEY = 'api-search-result';
 const FAVORITES_KEY = 'favorite-books';
 
@@ -10,17 +10,32 @@ const resultContainer = document.getElementById('resultSearch');
 const favouriteContainer = document.getElementById('resultFavourite');
 const authorFilter = document.getElementById('authorFilter');
 
-// Application state.
-// - favorites: saved favorite books
-// - allBooks: all fetched books from the latest search
-// - selectedAuthor: currently active author filter
+// App state.
 let favorites = getSavedFavorites();
 let allBooks = [];
 let selectedAuthor = 'all';
+let lastQuery = '';
+
+// Debounced version of the search handler used while typing.
+const debouncedSearch = debounce(handleSearch, 400);
 
 /**
- * Save search results to localStorage.
- * @param {Array} data
+ * Prevents a function from running too often.
+ * Useful for search inputs to avoid making too many API requests.
+ */
+function debounce(fn, delay = 400) {
+  let timeout;
+
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      fn(...args);
+    }, delay);
+  };
+}
+
+/**
+ * Save current search results in localStorage.
  */
 function saveResult(data) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
@@ -28,7 +43,6 @@ function saveResult(data) {
 
 /**
  * Read saved search results from localStorage.
- * @returns {Array|null}
  */
 function getSavedResult() {
   const raw = localStorage.getItem(STORAGE_KEY);
@@ -43,10 +57,8 @@ function clearSavedResult() {
 }
 
 /**
- * Fetch books from Open Library API and map raw data
- * into a smaller structure used by the app.
- * @param {string} query
- * @returns {Promise<Array>}
+ * Fetch books from Open Library API
+ * and normalize the response into the shape used by the app.
  */
 async function fetchData(query) {
   const response = await fetch(
@@ -59,7 +71,7 @@ async function fetchData(query) {
 
   const data = await response.json();
 
-  const filteredData = data.docs.slice(0, 10).map((book) => ({
+  return data.docs.slice(0, 10).map((book) => ({
     key: book.key,
     title: book.title,
     author: book.author_name?.[0] || 'Unknown author',
@@ -68,14 +80,10 @@ async function fetchData(query) {
       ? `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg`
       : null,
   }));
-
-  return filteredData;
 }
 
 /**
- * Render search results into the results container.
- * @param {HTMLElement} container
- * @param {Array} books
+ * Render the main search result cards.
  */
 function renderResult(container, books) {
   if (!books.length) {
@@ -84,7 +92,9 @@ function renderResult(container, books) {
   }
 
   container.innerHTML = books.map((book) => {
-    const favoriteClass = isFavorite(book.key) ? 'card__favorite-btn--active' : '';
+    const favoriteClass = isFavorite(book.key)
+      ? 'card__favorite-btn--active'
+      : '';
 
     return `
       <article class="results__card">
@@ -100,10 +110,9 @@ function renderResult(container, books) {
             aria-hidden="true"
           >
             <path
-          <path
-            class="card__favorite-path"
-            d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-          />
+              class="card__favorite-path"
+              d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+            />
           </svg>
         </button>
 
@@ -124,25 +133,21 @@ function renderResult(container, books) {
 }
 
 /**
- * Render a generic error or message state.
- * @param {HTMLElement} container
- * @param {string} message
+ * Render a simple message or error state.
  */
 function renderError(container, message) {
   container.innerHTML = `<p>${message}</p>`;
 }
 
 /**
- * Save favorites to localStorage.
- * @param {Array} data
+ * Save favorite books in localStorage.
  */
 function saveFavorites(data) {
   localStorage.setItem(FAVORITES_KEY, JSON.stringify(data));
 }
 
 /**
- * Read saved favorites from localStorage.
- * @returns {Array}
+ * Read favorite books from localStorage.
  */
 function getSavedFavorites() {
   const raw = localStorage.getItem(FAVORITES_KEY);
@@ -150,18 +155,16 @@ function getSavedFavorites() {
 }
 
 /**
- * Check whether a given book is already in favorites.
- * @param {string} bookKey
- * @returns {boolean}
+ * Check whether a given book is already marked as favorite.
  */
 function isFavorite(bookKey) {
   return favorites.some((book) => book.key === bookKey);
 }
 
 /**
- * Add or remove a book from favorites.
- * Then re-render both favorites and the currently filtered results.
- * @param {Object} book
+ * Toggle a book in the favorites list.
+ * After updating favorites, re-render both the favorites panel
+ * and the currently visible search results.
  */
 function toggleFavorite(book) {
   const exists = isFavorite(book.key);
@@ -178,9 +181,7 @@ function toggleFavorite(book) {
 }
 
 /**
- * Render favorites sidebar.
- * @param {HTMLElement} container
- * @param {Array} books
+ * Render the favorites sidebar.
  */
 function renderFavorites(container, books) {
   const count = books.length;
@@ -224,7 +225,7 @@ function renderFavorites(container, books) {
                           <div class="favorites__no-cover">No cover</div>
                         </div>
                       `
-                  } 
+                  }
 
                   <div class="favorites__content">
                     <p class="favorites__book-title">${book.title}</p>
@@ -255,9 +256,8 @@ function renderFavorites(container, books) {
 }
 
 /**
- * Render the author filter based on current search results.
- * Hidden when there are no valid authors to filter by.
- * @param {Array} books
+ * Render the author filter options based on current results.
+ * Hide the filter when there is nothing useful to filter.
  */
 function renderAuthorFilter(books) {
   const authors = [...new Set(
@@ -280,8 +280,7 @@ function renderAuthorFilter(books) {
 }
 
 /**
- * Return currently visible books based on active author filter.
- * @returns {Array}
+ * Return books filtered by the currently selected author.
  */
 function getFilteredBooks() {
   if (selectedAuthor === 'all') {
@@ -291,29 +290,23 @@ function getFilteredBooks() {
   return allBooks.filter((book) => book.author === selectedAuthor);
 }
 
-/* ---------- Initial render ---------- */
-
-// Restore saved search results on page load.
-const saved = getSavedResult();
-if (saved) {
-  allBooks = saved;
-  renderAuthorFilter(allBooks);
-  renderResult(resultContainer, getFilteredBooks());
-}
-
-// Always render favorites on page load.
-renderFavorites(favouriteContainer, favorites);
-
-/* ---------- Events ---------- */
-
-// Search button click.
-button.addEventListener('click', async () => {
+/**
+ * Main search flow used by:
+ * - search button
+ * - Enter key
+ * - debounced typing
+ */
+async function handleSearch() {
   const query = input.value.trim();
 
   if (!query) {
     renderError(resultContainer, 'Type something first.');
     return;
   }
+
+  // Prevent duplicate requests for the same query.
+  if (query === lastQuery) return;
+  lastQuery = query;
 
   resultContainer.textContent = 'Loading...';
 
@@ -330,29 +323,55 @@ button.addEventListener('click', async () => {
     console.error(error);
     allBooks = [];
     selectedAuthor = 'all';
+    lastQuery = '';
     authorFilter.classList.add('is-hidden');
     renderError(resultContainer, 'Something went wrong.');
   }
+}
+
+/* ---------- Initial render ---------- */
+
+// Restore saved results from previous session.
+const saved = getSavedResult();
+if (saved) {
+  allBooks = saved;
+  renderAuthorFilter(allBooks);
+  renderResult(resultContainer, getFilteredBooks());
+}
+
+// Always render favorites from saved localStorage state.
+renderFavorites(favouriteContainer, favorites);
+
+/* ---------- Events ---------- */
+
+// Manual search via button.
+button.addEventListener('click', handleSearch);
+
+// Debounced live search while typing.
+input.addEventListener('input', () => {
+  if (input.value.trim().length < 2) return;
+  debouncedSearch();
 });
 
-// Allow Enter key to trigger search.
+// Search with Enter.
 input.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') {
-    button.click();
+    handleSearch();
   }
 });
 
-// Clear current search results and reset filter state.
+// Reset search state and UI.
 clearBtn.addEventListener('click', () => {
   clearSavedResult();
   allBooks = [];
   selectedAuthor = 'all';
+  lastQuery = '';
   authorFilter.classList.add('is-hidden');
   authorFilter.innerHTML = '<option value="all">All authors</option>';
   resultContainer.innerHTML = '<p>The results have been cleared.</p>';
 });
 
-// Toggle favorite state from result cards.
+// Toggle favorites directly from result cards.
 resultContainer.addEventListener('click', (event) => {
   const favoriteButton = event.target.closest('.card__favorite-btn');
 
@@ -366,7 +385,7 @@ resultContainer.addEventListener('click', (event) => {
   toggleFavorite(selectedBook);
 });
 
-// Remove a book from favorites sidebar.
+// Remove items from favorites sidebar.
 favouriteContainer.addEventListener('click', (event) => {
   const favoriteButton = event.target.closest('.favorites__button');
 
@@ -380,7 +399,7 @@ favouriteContainer.addEventListener('click', (event) => {
   renderResult(resultContainer, getFilteredBooks());
 });
 
-// Update results when author filter changes.
+// Apply author filtering on current results.
 authorFilter.addEventListener('change', (event) => {
   selectedAuthor = event.target.value;
   renderResult(resultContainer, getFilteredBooks());
